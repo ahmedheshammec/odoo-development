@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <record model="ir.sequence" id="students_sequence">
+        <field name="name">Students Sequence</field>
+        <field name="code">sequence.student</field>
+        <field name="prefix">Student-000</field>
+        <field name="number_next" eval="1"/>
+        <field name="number_increment" eval="1"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,153 @@
+<odoo>
+    <data>
+
+        <record model="ir.actions.act_window" id="material_action">
+            <field name="name">Material</field>
+            <field name="res_model">material</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('level_id', '=', active_id)]</field>
+            <field name="context">{'default_level_id': active_id}</field>
+        </record>
+
+        <record model="ir.ui.view" id="my_module_level_formView">
+            <field name="name">my_module level form View</field>
+            <field name="model">level</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button
+                                    name="action_view_material"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-globe icon"
+                            >
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Materials</span>
+                                </div>
+                            </button>
+
+                            <button name="%(my_module.material_action)d" type="action" class="oe_stat_button"
+                                    icon="fa-globe icon">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_text">Materials</span>
+                                    <span class="o_stat_text">Action</span>
+                                </div>
+                            </button>
+
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="start_date"/>
+                                <field name="end_date"/>
+                            </group>
+                            <notebook>
+                                <page string="Materials">
+                                    <group>
+                                        <field name="material_lines" string="Materials">
+                                            <tree string="Materials" editable="bottom">
+                                                <field name="name"/>
+                                                <field name="grade_teacher"/>
+                                            </tree>
+                                        </field>
+
+                                    </group>
+                                </page>
+                                <page string="Students">
+                                    <group>
+                                        <field name="students_ids"/>
+                                        <tree>
+                                            <field name="name"/>
+                                        </tree>
+                                    </group>
+                                </page>
+                            </notebook>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="my_module_level_treeView">
+            <field name="name">my_module level Tree View</field>
+            <field name="model">level</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="material_view_form">
+            <field name="name">Material</field>
+            <field name="model">material</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="active" invisible="1"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group>
+                                <field name="grade_teacher"/>
+                                <field name="level_id"/>
+                            </group>
+                        </group>
+
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="material_view_list">
+            <field name="name">Materials</field>
+            <field name="model">material</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" width="40%"/>
+                    <field name="grade_teacher" width="30%"/>
+                    <field name="level_id" readonly="1" width="30%"/>
+                </tree>
+            </field>
+        </record>
+
+
+
+        <record model="ir.actions.act_window" id="my_module_level_action">
+          <field name="name">level_action</field>
+          <field name="res_model">level</field>
+          <field name="view_mode">tree,form</field>
+      </record>
+
+        <menuitem
+                id="my_module_levelView_mainLevel_menuItem"
+                name="Level Operation"
+                parent="my_module_topLevel_menuItem"
+        />
+
+        <menuitem
+                id="my_module_levelView_subLevel_menuItem"
+                name="Level"
+                parent="my_module_levelView_mainLevel_menuItem"
+                action="my_module_level_action"
+        />
+    </data>
+</odoo>
