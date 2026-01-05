@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paper format with no margins (matches legal_affairs_dep setup) -->
+    <record id="paperformat_property_delegation" model="report.paperformat">
+        <field name="name">Property Delegation</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">20</field>
+        <field name="margin_right">20</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Report Action - appears in the cog/print menu -->
+    <record id="action_report_property_delegation" model="ir.actions.report">
+        <field name="name">Delegation Document</field>
+        <field name="model">property.delegation</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">property.report_property_delegation_document</field>
+        <field name="report_file">property.report_property_delegation_document</field>
+        <field name="binding_model_id" ref="model_property_delegation"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Delegation - %s' % (object.name or 'Delegation')</field>
+        <field name="paperformat_id" ref="paperformat_property_delegation"/>
+    </record>
+
+    <!-- Report Template -->
+    <template id="report_property_delegation_document">
+        <t t-call="web.html_container">
+            <meta charset="UTF-8"/>
+            <t t-call-assets="web.report_assets_common" t-js="false"/>
+
+            <t t-foreach="docs" t-as="o">
+                <t t-set="company" t-value="o.company_id"/>
+
+                <div class="page" style="page-break-after: always; position: relative;">
+                    <div class="oe_structure"/>
+
+                    <div class="content-wrapper">
+
+                        <!-- Delegation Information (copied layout from legal_affairs_dep up to line 365) -->
+                        <div class="row info-section">
+                            <div class="col-12">
+                                <h1 style="font-family: 'Calibri', 'Arial', sans-serif; font-size: 30px; direction: rtl; text-align: center;">
+                                    عقد تفويض بيع شقة
+                                </h1>
+
+                                <h1 style="font-family: 'Calibri', 'CalibriBold', 'Arial', sans-serif; font-size: 20px; font-weight: 900; direction: rtl; text-align: right; text-shadow: 0.5px 0 0 currentColor, 0 0.5px 0 currentColor, 0 -0.5px 0 currentColor, -0.5px 0 0 currentColor;">
+                                    الطرف الأول (المالك/ أو صاحب العمل)
+                                </h1>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; font-size: 18px; font-weight: 700; direction: rtl; text-align: right;">
+                                    ويمثلها في هذا العقد / إدارة المكتب الفني
+                                </h3>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; font-size: 18px; font-weight: 700; direction: rtl; text-align: right;">
+                                    ويشار له فيما بعد الطرف الاول.
+                                </h3>
+
+                                <h1 style="font-family: 'Calibri', 'CalibriBold', 'Arial', sans-serif; font-size: 20px; font-weight: 900; direction: rtl; text-align: right; text-shadow: 0.5px 0 0 currentColor, 0 0.5px 0 currentColor, 0 -0.5px 0 currentColor, -0.5px 0 0 currentColor;">
+                                    الطرف الثاني:
+                                </h1>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; direction: rtl; text-align: right;">
+                                    سجل تجاري رقم :
+                                    مصدرها /
+                                </h3>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; direction: rtl; text-align: right;">
+                                    مقرها الرئيسي:
+                                </h3>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; direction: rtl; text-align: right;">
+                                    البريد الإلكتروني:
+                                </h3>
+                                <h3 style="font-family: 'Calibri', 'Arial', sans-serif; direction: rtl; text-align: right;">
+                                    ويشار له فيما بعد الطرف الثاني.
+                                </h3>
+                            </div>
+                        </div>
+
+
+                        <div class="oe_structure"/>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
