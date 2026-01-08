@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Report definition -->
+    <record id="report_inventory_count_sheet" model="ir.actions.report">
+        <field name="name">Inventory Count Sheet</field>
+        <field name="model">pos.manual.inventory</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pos_manual_inventory_adjustment.inventory_count_sheet_template</field>
+        <field name="report_file">pos_manual_inventory_adjustment.inventory_count_sheet_template</field>
+        <field name="binding_model_id" ref="model_pos_manual_inventory"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+
+    <!-- Report template -->
+    <template id="inventory_count_sheet_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h3 class="text-center">
+                                    <strong>INVENTORY COUNT SHEET</strong>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <!-- Document Information -->
+                        <div class="row">
+                            <div class="col-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td>
+                                            <strong>Reference:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Date:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.date" t-options="{'widget': 'datetime'}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Location:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.location_id.display_name"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td>
+                                            <strong>Prepared by:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.user_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Status:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.state"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Company:</strong>
+                                        </td>
+                                        <td>
+                                            <span t-field="doc.company_id.name"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <br/>
+
+                        <!-- Location Products Table -->
+                        <t t-set="location_products" t-value="doc.line_ids.filtered(lambda l: l.is_auto_populated)"/>
+                        <t t-if="location_products">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 style="margin-top: 20px; margin-bottom: 15px;">
+                                        <strong>Location Products</strong>
+                                    </h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #e7f3ff;">
+                                                <th class="text-center">#</th>
+                                                <th>Product</th>
+                                                <th class="text-center">Barcode</th>
+                                                <th class="text-center">UoM</th>
+                                                <th class="text-center">Counted Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="line_number" t-value="0"/>
+                                            <t t-foreach="location_products" t-as="line">
+                                                <t t-set="line_number" t-value="line_number + 1"/>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <span t-esc="line_number"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="line.product_id.display_name"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_barcode"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_uom_id.name"/>
+                                                    </td>
+                                                    <td class="text-center" style="background-color: #d4edda;">
+                                                        <t t-if="doc.state in ['counted', 'submitted']">
+                                                            <span t-field="line.counted_qty"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            ___________
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- New Counted Items Table -->
+                        <t t-set="manual_products" t-value="doc.line_ids.filtered(lambda l: not l.is_auto_populated)"/>
+                        <t t-if="manual_products">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 style="margin-top: 30px; margin-bottom: 15px;">
+                                        <strong>New Counted Items</strong>
+                                    </h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #e7f3ff;">
+                                                <th class="text-center">#</th>
+                                                <th>Product</th>
+                                                <th class="text-center">Barcode</th>
+                                                <th class="text-center">UoM</th>
+                                                <th class="text-center">Counted Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="manual_line_number" t-value="0"/>
+                                            <t t-foreach="manual_products" t-as="line">
+                                                <t t-set="manual_line_number" t-value="manual_line_number + 1"/>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <span t-esc="manual_line_number"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="line.product_id.display_name"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_barcode"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_uom_id.name"/>
+                                                    </td>
+                                                    <td class="text-center" style="background-color: #d4edda;">
+                                                        <t t-if="doc.state in ['counted', 'submitted']">
+                                                            <span t-field="line.counted_qty"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            ___________
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Fallback: Show all products if none are categorized yet -->
+                        <t t-if="not location_products and not manual_products and doc.line_ids">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 style="margin-top: 20px; margin-bottom: 15px;">
+                                        <strong>Products</strong>
+                                    </h4>
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr style="background-color: #e7f3ff;">
+                                                <th class="text-center">#</th>
+                                                <th>Product</th>
+                                                <th class="text-center">Barcode</th>
+                                                <th class="text-center">UoM</th>
+                                                <th class="text-center">Counted Qty</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="line_number" t-value="0"/>
+                                            <t t-foreach="doc.line_ids" t-as="line">
+                                                <t t-set="line_number" t-value="line_number + 1"/>
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <span t-esc="line_number"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="line.product_id.display_name"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_barcode"/>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <span t-field="line.product_uom_id.name"/>
+                                                    </td>
+                                                    <td class="text-center" style="background-color: #d4edda;">
+                                                        <t t-if="doc.state in ['counted', 'submitted']">
+                                                            <span t-field="line.counted_qty"/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            ___________
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Notes Section -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <strong>Additional Notes:</strong>
+                                <div style="border: 1px solid #dee2e6; min-height: 80px; padding: 10px; margin-top: 5px;">
+                                    <t t-if="doc.notes">
+                                        <span t-field="doc.notes"/>
+                                    </t>
+                                    <t t-else="">
+                                        ___________________________________________________________________________
+                                        <br/>
+                                        ___________________________________________________________________________
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div class="row mt-4">
+                            <div class="col-6 offset-6"> <!-- moves it to the right side -->
+                                <div class="text-center">
+                                    <strong>Counted By:</strong>
+                                    <br/>
+                                    <br/>
+
+                                    <div style="width: 200px; margin: 0 auto;">
+                                        <div>Signature</div>
+                                        <div style="border-top: 1px solid #000; margin-top: 5px;"></div>
+                                    </div>
+                                    <br/>
+
+                                    <div style="width: 200px; margin: 0 auto;">
+                                        <div>Date</div>
+                                        <div style="border-top: 1px solid #000; margin-top: 5px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
