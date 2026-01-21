@@ -434,6 +434,64 @@ update res_users set password = 'admin' where login = 'admin';
 
 ---
 
+### How to Run Odoo Server with a Different Port than the One Written in the Config? 
+
+This is useful for multiple odoo instance running without changing anything in the config file
+
+→ example
+
+```bash
+./odoo-bin -c odoo.conf --http-port=8069
+```
+
+---
+
+# Github
+
+### Odoo Github Links
+
+→ Community
+
+> https://github.com/odoo/odoo
+
+→ Enterprise 
+
+> https://github.com/odoo/enterprise
+
+### How to Link Github to Odoo Enterprise Private Branch? 
+
+1- Go to odoo.com and sign in with your account. 
+
+2- Scroll Down until you see `Useful Links` section. and click on `Partner Dashboard`
+
+3- Under Develop & Deplopy You'll see `Enterprise Github Access` where you can Github Usernames. 
+
+4- After you add the user name make sure there's `read` next to it. and wait for 15 Min until odoo sends an invitation. then you can view the enterprise link mentioned above.
+
+### Command to Clone Odoo
+
+→ Community
+
+```bash
+git clone \
+  --branch 15.0 \
+  --single-branch \
+  --depth 1 \
+  git@github.com:odoo/odoo.git odoo15.0
+```
+
+→ Enterprise
+
+```bash
+git clone \
+  --branch 15.0 \
+  --single-branch \
+  --depth 1 \
+  git@github.com:odoo/enterprise.git enterprise
+```
+
+
+
 ## Show All Git Branches After Cloning a Github Project
 
 **List remote branches**
@@ -490,6 +548,145 @@ git commit -m "Remove .DS_Store files and update .gitignore"
 # 4️⃣ Push to your branch (replace <branch> if not 'main')
 git push origin <branch>
 ```
+
+### Untrack .DS_Store File from Git
+
+```bash
+git rm --cached .DS_Store
+```
+
+If .DS_Store exists in multiple folders use this: 
+
+```bash
+find . -name ".DS_Store" -print
+
+find . -name ".DS_Store" -exec git rm --cached {} +
+
+git commit -m "chore: remove all .DS_Store files and ignore them"
+
+git push origin Test
+```
+
+### How to Remove .DS_Store from all previous commits like it didn't exist?
+
+**1. Go back to your latest work:**
+
+```bash
+git checkout -f main
+```
+
+**2. Use a "Rebase" to scrub the file from the beginning:** We are going to tell Git to go back to the start and act as if that file was never added.
+
+```bash
+git filter-branch --force --index-filter \
+"git rm --cached --ignore-unmatch .DS_Store" \
+--prune-empty --tag-name-filter cat -- --all
+```
+
+*(This command looks scary, but it just tells Git: "Go through every commit in my history and remove `.DS_Store` from the records.")*
+
+**3. Cleanup the backup Git made:**
+
+```bash
+rm -rf .git/refs/original/
+git reflog expire --expire=now --all
+git gc --prune=now
+```
+
+**Why this works**
+
+By doing this, you aren't just ignoring the file; you are **deleting it from the timeline.** * When you `git checkout e74cf98`now, `.DS_Store` won't be there as a "tracked" file.
+
+- Git won't care if macOS creates a new one, because your Global Ignore will finally kick in for an untracked file.
+
+**A much simpler "Workaround"**
+
+If you don't want to mess with history, you can just get into the habit of using the **"Discard and Switch"** command whenever you move between commits:
+
+```bash
+git checkout -f main
+```
+
+The `-f` (force) is your "I don't care about .DS_Store" button. It tells Git to overwrite any local changes with the version of the files in the branch you are moving to.
+
+### How to remove and untrack `__pycache__` files from git? 
+
+→ First We'll Add the Following to `.gitignore`
+
+```bash 
+printf "\n# Python cache\n**/__pycache__/\n" >> .gitignore
+```
+
+→ Check
+
+```bash
+tail -n 5 .gitignore
+git ls-files | grep __pycache__
+```
+
+→ Untrack 
+
+```bash
+git rm -r --cached sale_edits/**/__pycache__/
+```
+
+`PS` the `sale_edit` is an example of a module and it showed in the previous `git ls-files | grep __pycache__` command so we're untracking it from this folder. 
+
+→ Add
+
+```bash
+git add .gitignore
+git commit -m "chore: remove tracked python cache files and ignore __pycache__"
+```
+
+→ Check Again
+
+```bash
+git ls-files | grep __pycache__
+```
+
+Nothing should be printed in this command and you can push safely.
+
+**Better Approach for using the git rm -r --cached command**
+
+→ instead of using this command: 
+
+```bash
+git rm -r --cached sale_edits/**/__pycache__/
+```
+
+which works only for sale_edits module we can do the following 
+
+```bash
+git rm -r --cached .
+git add .
+```
+
+🧪 Verification (always do this)
+
+```bash
+git ls-files | grep -E "__pycache__|\.pyc"
+```
+
+→ should output **nothing**
+
+---
+
+### How to View All the Git Log, Print it in Terminal and Copy it to the Clipboard?
+
+use this command: 
+
+```bash
+git log --all | tee /dev/tty | pbcopy
+```
+
+or if you want to limit to the last 5 commits only type: 
+
+```bash
+git log -5 --all | tee /dev/tty | pbcopy
+```
+
+
 
 ---
 
@@ -2209,6 +2406,12 @@ class ReportSalaryCertificate(models.AbstractModel):
 <meta charset="UTF-8"/>
 ```
 
+→ and at the start of the template make sure it's like this: 
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+```
+
 → Here's the Full Template: 
 
 ```xml
@@ -2406,9 +2609,25 @@ direction: ltr; unicode-bidi: embed;
 </table>
 ```
 
-→ The Final Look
+→ To make the text on the `same horizontal baseline` you can use the style `float` it's preferred with `wkhtmltopdf` 
 
-![image](imgs/partners_sign.png)
+```xml
+<!-- Signature Section -->
+<div style="width: 100%; margin-top: 40px; padding: 15px 0; overflow: hidden;">
+    <div style="float: right; text-align: center;">
+        <div style="font-weight: bold; border-bottom: 1px solid #333; display: inline-block; min-width: 150px; padding-bottom: 40px;">
+            المستلم
+        </div>
+    </div>
+    <div style="float: left; text-align: center;">
+        <div style="font-weight: bold; border-bottom: 1px solid #333; display: inline-block; min-width: 150px; padding-bottom: 40px;">
+            محاسب Accountant
+        </div>
+    </div>
+</div>
+```
+
+
 
 ---
 
@@ -2432,6 +2651,12 @@ direction: ltr; unicode-bidi: embed;
     <field name="dpi">90</field>
 </record>
 ```
+
+### Important Note When Using CSS Rules in a Report
+
+→ i had a problem with cut-offs from the right side of all qweb print reports caused by global css rule in one of the custom addons. 
+
+→ **The Fix**:Scoped the attestation report CSS to avoid leaking global @page/body margins into all reports, and wrapped the template content so the styles apply only to that report. This should stop the right‑side cutoff caused by the global margins/headers in web.report_assets_common.
 
 ### Useful Snippets
 
