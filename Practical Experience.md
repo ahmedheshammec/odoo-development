@@ -288,8 +288,9 @@ grep -vE '^\s*#|^\s*$' requirements.txt | while read req; do pkg=$(echo "$req" |
 
 pip install -r remaining_requirements.txt
 
-pip install lxml_html_clean
-pip install "werkzeug<2.1"
+grep -ri lxml requirements.txt
+grep -ri werkzeug requirements.txt
+pip install "werkzeug==xxxx"
 
 ./odoo-bin -c odoo.conf -i base
 ```
@@ -2661,12 +2662,42 @@ direction: ltr; unicode-bidi: embed;
 ### Useful Snippets
 
 ```xml
-<span t-field="o.sub_contractor_id.name"/>
+<span t-field="o.partner_id.name"/>
 ```
+
+→ Load `img` from the `company_id.logo` field
+
+```xml
+<img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="max-height: 90px; margin-top: 5px;" alt="Logo"/>
+```
+
+→ Control Line Height
 
 ```css
 line-height: 22px;
 ```
+
+→ For custom field using `t-if` so if the module is installed it will render the field, if not it won't render the field and not breake the whole report 
+
+instead of using: 
+
+```xml
+<td style="padding: 3px;"><span t-field="o.partner_id.gln_custom"/></td>
+```
+
+use: 
+
+```xml
+<td style="padding: 3px;"><span t-if="'gln_custom' in o.partner_id._fields" t-field="o.partner_id.gln_custom"/></td>
+```
+
+You can use this pattern for any other custom fields:
+
+```xml
+<span t-if="'field_name' in o.model._fields" t-field="o.model.field_name"/>
+```
+
+
 
 ---
 
