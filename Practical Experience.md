@@ -43,6 +43,10 @@ sudo -u postgres psql mydb < dump.sql # in Linux
 sudo -u postgres createdb -O <user> <database> # in Linux
 psql sheffield_live # in MacOS
 sudo -u postgres psql <database> < dump.sql # in Linux
+--------------
+psql -h localhost -U odoo -d postgres # Check Connection to Postgres on Linux
+createdb -h localhost -U odoo dbname # ⭐ Linux
+
 ```
 
 ✅ You should not use the Odoo UI to create the database first, unless you’re trying to create a template db with specific modules preinstalled. For simple dump restoration, just use the CLI.
@@ -183,8 +187,10 @@ curl -X POST \
 **Find Filestore on Your System**
 
 ```shell
-sudo find / -type d -iname "ollama" 2>/dev/null # Mac OS
-sudo find / -type d -iname "ollama" # Linux
+sudo find / -type d -iname "filestore" 2>/dev/null # Mac OS
+sudo find / -type d -iname "filestore" # Linux
+
+# Usually like this ON linux /home/ahmed/.local/share/Odoo/filestore
 ```
 
 **Useful Commands**
