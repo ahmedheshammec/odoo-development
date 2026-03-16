@@ -5,7 +5,9 @@
 ```shell
 psql postgres
 CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'postgres';
+createuser -s odoo18 # command to create user (use out of psql)
 ALTER USER odoo18 WITH SUPERUSER; # command to alter user
+brew services restart postgresql@17 # Command to Restart PostgreSQL
 ---------
 GRANT ALL PRIVILEGES ON DATABASE eqnaa TO odoo18;
 ALTER DATABASE <Your DB Name> OWNER TO odoo18;
@@ -167,7 +169,7 @@ db.dump_db('<db_name>', '/path/to/file.zip')
 exit()
 ```
 
-→ chang `<db_name>` & `file` with the actual names. 
+→ chang `<db_name>` & `file` with the actual names.       
 
 ```shell
 curl -X POST \
@@ -2101,7 +2103,19 @@ env['ir.ui.view'].browse(sorted(to_delete, reverse=True)).unlink()
 pbpaste | iconv -f utf-8 -t utf-8 -c | tr -d '\000-\037' | perl -0777 -ne 'print $1 if /(\{.*\}|\[.*\])/s' | jq '.' > response.json
 ```
 
+---
 
+## Clear Odoo Web Assets Cache
+
+→ Run this in odoo shell
+
+```python
+env['ir.attachment'].search([
+    ('url', 'like', '/web/assets/')
+]).unlink()
+```
+
+Then restart Odoo. This forces **asset regeneration**.
 
 ---
 
@@ -2703,7 +2717,13 @@ You can use this pattern for any other custom fields:
 <span t-if="'field_name' in o.model._fields" t-field="o.model.field_name"/>
 ```
 
+### Adding Real Spaces
 
+use this:
+
+```xml
+&#160;
+```
 
 ---
 
