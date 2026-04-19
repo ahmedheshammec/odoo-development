@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Sale Order Form View to add custom report button -->
+        <record id="view_order_form_inherit_collections_report" model="ir.ui.view">
+            <field name="name">collections.collections.form.inherit.custom.report</field>
+            <field name="model">collections.collections</field>
+            <field name="inherit_id" ref="managing_association_contracts.collections_collections_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_print_custom_pdf"
+                            string="خطاب مطالبه مالية"
+                            type="object"
+                            icon="fa-print"
+                            class="btn-primary"
+                            style="background-color: #007bff; border-color: #007bff; color: white;"
+                            groups="managing_association_contracts.group_collections_officers"/>
+                </xpath>
+                <xpath expr="//header" position="inside">
+                    <button name="action_print_custom_pdf_1"
+                            string="خطاب مطالبه مالية تفصيلي"
+                            type="object"
+                            icon="fa-print"
+                            class="btn-primary"
+                            style="background-color: #007bff; border-color: #007bff; color: white;"
+                            groups="managing_association_contracts.group_collections_officers"/>
+                </xpath>
+<!--                <xpath expr="//header" position="inside">-->
+<!--                    <button name="action_print_custom_pdf_2"-->
+<!--                            string="خطاب مطالبه مالية عيني"-->
+<!--                            type="object"-->
+<!--                            icon="fa-print"-->
+<!--                            class="btn-primary"-->
+<!--                            style="background-color: #007bff; border-color: #007bff; color: white;"/>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='date']" position="after">
+                    <field name="company_id" invisible="1"/>
+                    <field name="association_project_id" invisible="1"/>
+                </xpath>
+<!--                <xpath expr="//field[@name='project_ids']/tree//field[@name='total_amount']"-->
+<!--                       position="after">-->
+<!--                    <field name="support_type"/>-->
+
+<!--                </xpath>-->
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
